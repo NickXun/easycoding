@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>canvas3</title>
+	<style>
+		body {
+			background-color: #dddddd;
+		}
+		
+		#canvas {
+			background: #ffffff;
+			cursor: pointer;
+			margin-left: 10px;
+			margin-top: 10px;
+			-webkit-box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+			-moz-box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+			box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+		}
+
+		#controls {
+			margin-top: 10px;
+			margin-left: 15px;
+		}
+		#readout {
+			color: blue;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="controls">
+		<input type="button" id="animateButton" value="Animate">
+		<span id="readout"></span>
+	</div>
+	<canvas id="canvas" width="750" height="500">
+		
+	</canvas>
+
+</body>
+</html>
+<script src="js/requestAnimationFrame.js"></script>
+<script src="js/line.js"></script>
+<script src="js/3balls.js"></script>
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d'),
+		readout = document.getElementById('readout'),
+		animateButton = document.getElementById('animateButton'),
+		paused = true;
+		i = 0;
+	//var thball = new threeBall(canvas,context);
+	var line = new slowline(canvas,context,[{x:10,y:10},{x:30,y:40},{x:10,y:90}]);
+
+
+	function animate () {
+		var temp = "";
+		if (!paused) {
+			context.clearRect(0,0,canvas.width,canvas.height);
+			temp = line.update();
+			
+			if (temp == "ack") {
+				line.draw();
+				window.requestNextAnimationFrame(animate);
+			} else if (temp == "fin") {
+				if (i < canvas.width) {
+					i++;
+					line.update2(i,0,30,90);
+					line.draw2(0,0,i,0,30,90);
+					window.requestNextAnimationFrame(animate);
+				}
+
+			}
+		}
+	}
+
+	animateButton.onclick = function (e) {
+		paused = paused ? false : true;
+		if (paused) {
+			animateButton.value = 'Animate';
+			context.clearRect(0, 0, canvas.width,canvas.height);
+		}
+		else {
+			window.requestNextAnimationFrame(animate);
+			animateButton.value = 'Pause';
+		}
+	}
+
+	function windowToCanvas (canvas,x,y) {
+		var bbox = canvas.getBoundingClientRect();
+		return {
+			x: x - bbox.left * (canvas.width / bbox.width),
+			y: y - bbox.top * (canvas.height / bbox.height)
+		};
+	}
+	function updateReadout (x,y) {
+		readout.innerText = '(' + x.toFixed(0) + ',' + y.toFixed(0) + ')';
+	}
+	function drawHorizontalLine (y) {
+		context.beginPath();
+		context.moveTo(0,y + 0.5);
+		context.lineTo(context.canvas.width, y + 0.5);
+		context.stroke();
+	}
+	function drawVerticallLine (x) {
+		context.beginPath();
+		context.moveTo(x + 0.5,0);
+		context.lineTo(x + 0.5, context.canvas.height);
+		context.stroke();
+	}
+	function drawGuidelines (x , y) {
+		context.strokeStyle = 'rgba(0,0,230,0.8)';
+		context.clearRect(0,0,canvas.width,canvas.height);
+		context.lineWidth = 0.5;
+		drawVerticallLine(x);
+		drawHorizontalLine(y);
+	}
+	canvas.onmousemove = function (e) {
+		var loc = windowToCanvas(canvas,e.clientX,e.clientY);
+		updateReadout(loc.x,loc.y);
+		//drawGuidelines(loc.x,loc.y);
+	}
+
+</script>

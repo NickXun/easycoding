@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>nkuthunder</title>
+	<style>
+		#canvas{
+			
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="600" height="300">
+		
+	</canvas>
+</body>
+</html>
+<script>
+	var canvas = document.getElementById('canvas'),
+		context = canvas.getContext('2d');
+	context.font = '38pt Arial';
+	context.fillStyle = 'cornflowerblue';
+	context.strokeStyle = 'blue';
+	context.fillText('Hello Canvas',canvas.width/2 - 150,canvas.height/2 + 15);
+	context.strokeText('Hello Canvas',canvas.width/2 - 150,canvas.height/2 + 15);
+	
+
+</script>
